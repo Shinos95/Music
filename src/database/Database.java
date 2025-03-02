@@ -14,17 +14,71 @@ public class Database {
     private String password;
     private String percorso;
     private Connection connection;
-   
     private static final String DRIVER = "com.mysql.cj.jdbc.Driver";
-
-    //creo un solo oggetto Database e lo richiamo quando serve senza creare altre istanze
     
-    public Database(){
+    /*Un design pattern è una soluzione astratta, generica e riproducibile 
+    a un problema ricorrente di programmazione. Il concetto riprendere quello di 
+    pattern (motivo) in architettura, ed è stato popolarizzato dal libro con lo stesso 
+    nome del 1994 con particolare riferimento alla programmazione a oggetti.
+ 
+    L'uso e il tempo hanno modificato il significato dato ad alcuni dei pattern, che erano 23, 
+    specificati nel libro originale, e ne ha creati altri.
+    
+    Un design pattern è una soluzione astratta,generica e riproducibile a un problema ricorrente di programmazione. 
+    Un pattern non è un pezzo di codice specifico ma un modo di lavorare
+    unendo dei pezzi.
+	  
+    -1. il problema da affrontare, il problema che affronta il pattern
+    -2. perché viene utilizzato
+    -3. la sua struttura, quali parti lo compongono
+
+    I pattern sono tradizionalmente divisi in famiglie:
+    - creazionali
+    - strutturali
+    - comportmentali
+    */
+
+    /*Quello di riportato è il patter CREAZIONALE SINGLETON:
+     *1.Problema:
+    vogliamo evitare di creare più volte lo stesso oggetto, per ragioni di prestazioni, di sicurezza, o entrambe. Esempi classici: registro (che non dovrebbe essere duplicato), 
+    DAO (ne serve tipicamente solo uno per tipo).
+
+    2.Soluzione:
+    viene usato per garantire al massimo una istanza di un oggetto. 
+    Definito un oggetto di cui non vogliamo ripetizioni modifichiamo la classe relavita dell'oggetto e il suo costruttore in modo da evitare repliche e crearne al massimo uno.
+    Questo passaggio richiede un approccio standard che è il Singleton
+
+    3.Soggetti:
+    - il Client: chi ha bisogno dell'oggetto e che quindi usarà il Singleton
+    - il Singleton stesso che rappresenta l'oggetto, è l’elemento prodotto di si potrà
+    avere una sola istanza
+
+    Ecco i passaggi:
+*/
+    // un'ISTANZA PRIVATA che è una PROPRIETA' STATICA(della classe), cioè un oggetto, che è anche l'unico oggetto possibile di questo tipo.
+    // Il tipo dell’oggetto è anche lo stesso della classe in cui abbiamo inserito il Singleton proprio perché l’oggetto appartiene alla classe.
+    // La classe ha come proprietà di classe l’unico oggetto possibile.
+    // Per convenzione il nome assegnatogli è instance.
+    private static Database instance = null;
+    
+    // ci deve essere un metodo statico GET public che ritorni il valore di quell'oggetto e che al suo interno abbia un controllo sul valore dell’istanza instance.
+    // Alla prima chiamata del metodo instance verrà creato e restituito. Dalla seconda in avanti, verrà sempre restituita l’istanza creata in precedenza
+    public synchronized static Database getDatabase() {
+        // La parola chiave synchronized nel metodo getInstance() assicura che un chiamante per volta entri nel metodo, di modo che non possano esserci due chiamate 
+        // contemporanee che porterebbero alla creazione di due oggetti instance separati, di fatto rompendo il meccanismo.
+        if(instance == null){
+            instance = new Database();
+        }
+        return instance;
+    }
+
+    //un costruttore privato e vuoto. Privato significa che non può essere usato e  richiamato fuori dalla classe
+    private Database(){
         this.user = "root";
         this.password = "root";
         setPercorso(percorso);
     }
-   
+
     public void setPercorso(String percorso) {
         String url = "jdbc:mysql://127.0.0.1:3306/music2";
         String timezone = "?useSSL=false&serverTimezone=UTC";
@@ -34,13 +88,11 @@ public class Database {
     public void openConn(){
         try {
             Class.forName(DRIVER);
+            connection = DriverManager.getConnection(percorso, user, password);  
         } catch (ClassNotFoundException e) {
             e.printStackTrace();
             System.out.println("controlla la proprietà DRIVER oppure di avere aggiunto "+ 
             " il jar che contiene la libreria JDBC");
-        }
-        try(Connection connection = DriverManager.getConnection(percorso, user, password);) {
-            this.connection = connection;
         }catch(SQLException e){
                 e.printStackTrace();
                 System.out.println("la connessione non è aperta controlla che il percorso, lo user e la password " +
@@ -97,6 +149,7 @@ public class Database {
     
     //metodo per eseguire qualsiasi DML(INSERT,DELETE,UPDATE)
     public Long executeUpdate(String comando,String... parametri){
+        Long ris = 0L;
         openConn();
         String[] colonne = {"id"};
         try {
@@ -108,20 +161,20 @@ public class Database {
                 //INSERT INTO song (name,duration) VALUSE ("nomeCanzone",?);
             }
              //INSERT INTO song (name,duration) VALUSE ("nomeCanzone",4.3);
-            ps.executeUpdate();
+            ris = (long)ps.executeUpdate();
             ResultSet rs = ps.getGeneratedKeys();
             if(rs != null){
-                return rs.getLong(1);
+                ris = rs.getLong(1);
+                rs.close();
+                return ris;
             }
             ps.close();
-            if(rs != null)
-                rs.close();
         } catch (Exception e) {
             e.printStackTrace();
         }finally{
             closeConn();
         }
-        return 1L;
+        return ris;
     }
    
     

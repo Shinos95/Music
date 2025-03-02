@@ -24,7 +24,6 @@ public abstract class Entity implements IMappable{
         return "[id=" + id + "]";
     }
 
-    //prova2 modifica per github 
     
     
     
