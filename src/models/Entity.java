@@ -1,6 +1,6 @@
 package models;
 
-public abstract class Entity implements IMappable{
+public abstract class Entity implements IMappable, Cloneable{
 
     private Long id;
 
@@ -24,7 +24,14 @@ public abstract class Entity implements IMappable{
         return "[id=" + id + "]";
     }
 
-    
+    public Entity clone(){
+        try {
+            return (Entity)super.clone();
+        } catch (CloneNotSupportedException e) {
+           System.out.println("clonazione non avvenuta");
+           return null;
+        }
+    }
     
     
 }

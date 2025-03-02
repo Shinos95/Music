@@ -8,7 +8,7 @@ import java.sql.SQLException;
 import java.util.HashMap;
 import java.util.Map;
 
-public class Database {
+public class Database implements IDatabase{
 
     private String user;
     private String password;
@@ -57,11 +57,11 @@ public class Database {
     // Il tipo dell’oggetto è anche lo stesso della classe in cui abbiamo inserito il Singleton proprio perché l’oggetto appartiene alla classe.
     // La classe ha come proprietà di classe l’unico oggetto possibile.
     // Per convenzione il nome assegnatogli è instance.
-    private static Database instance = null;
+    private static IDatabase instance = null;
     
     // ci deve essere un metodo statico GET public che ritorni il valore di quell'oggetto e che al suo interno abbia un controllo sul valore dell’istanza instance.
     // Alla prima chiamata del metodo instance verrà creato e restituito. Dalla seconda in avanti, verrà sempre restituita l’istanza creata in precedenza
-    public synchronized static Database getInstance() {
+    public synchronized static IDatabase getInstance() {
         // La parola chiave synchronized nel metodo getInstance() assicura che un chiamante per volta entri nel metodo, di modo che non possano esserci due chiamate 
         // contemporanee che porterebbero alla creazione di due oggetti instance separati, di fatto rompendo il meccanismo.
         if(instance == null){
@@ -83,7 +83,7 @@ public class Database {
         this.percorso = url+ timezone;
     }
 
-    public void openConn(){
+    private void openConn(){
         try {
             Class.forName(DRIVER);
             connection = DriverManager.getConnection(percorso, user, password);  

@@ -1,0 +1,5 @@
+    
+    ----- Album
+    Nome ... : [NOME]
+    Data di Rilascio: [DATA_RILASCIO]
+    Canzoni: [LISTA_CANZONI]

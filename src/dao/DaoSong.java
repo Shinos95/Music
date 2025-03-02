@@ -5,6 +5,7 @@ import java.util.Map;
 import java.util.Map.Entry;
 
 import database.Database;
+import database.IDatabase;
 import models.EntitiesFactory;
 import models.Entity;
 import models.Song;
@@ -14,7 +15,7 @@ public class DaoSong implements IDao<Song>{
     //per poter accedere ai dati delle canzoni avrà come dipendenza
     //un oggetto di tipo Database che gli fornisce il ritorno dei metodi
     //executeQuery(), executeUpdate()
-    private Database database;
+    private IDatabase database;
     
     private final String INSERT = "INSERT INTO song (name,duration) VALUES (?,?)"; 
     private final String READ = "SELECT * FROM song";
@@ -35,7 +36,7 @@ public class DaoSong implements IDao<Song>{
 
     //costruttore
     private DaoSong(){
-        database = Database.getDatabase();
+        database = Database.getInstance();
     }
 
     //metodi

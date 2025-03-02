@@ -5,6 +5,7 @@ import java.util.Map;
 import java.util.Map.Entry;
 
 import database.Database;
+import database.IDatabase;
 import models.Album;
 import models.EntitiesFactory;
 import models.Entity;
@@ -12,7 +13,7 @@ import models.Entity;
 public class DaoAlbum implements IDao<Album>{
 
     //proprietà
-    private Database database;
+    private IDatabase database;
     private final String INSERT = "INSERT INTO album (name,date_release) VALUES (?,?)"; 
     private final String READ = "SELECT * FROM album";
     private final String READBYID = "SELECT * FROM album WHERE id = ?";

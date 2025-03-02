@@ -35,4 +35,11 @@ public class Song extends Entity{
         return "Song" + super.toString() + "name=" + name + ", duration=" + duration + "\n";
     }
 
+    @Override
+    public Entity clone() {
+      return this.clone();
+    }
+
+    
+
 }
