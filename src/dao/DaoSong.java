@@ -9,7 +9,7 @@ import models.EntitiesFactory;
 import models.Entity;
 import models.Song;
 //accede ai dati usando l'oggetto database
-public class DaoSong implements IDao{
+public class DaoSong implements IDao<Song>{
 
     //per poter accedere ai dati delle canzoni avrà come dipendenza
     //un oggetto di tipo Database che gli fornisce il ritorno dei metodi
@@ -40,12 +40,8 @@ public class DaoSong implements IDao{
 
     //metodi
     @Override
-    public Long addEntity(Entity e) {
-        if(e instanceof Song){
-            Song s = (Song) e;
-            return database.executeUpdate(INSERT, s.getName(),String.valueOf(s.getDuration()));
-        }
-        return null;
+    public Long addEntity(Song s) {
+        return database.executeUpdate(INSERT, s.getName(),String.valueOf(s.getDuration()));
     }
 
     public Long addEntity(Entity e, Long idAlbum) {
@@ -63,6 +59,7 @@ public class DaoSong implements IDao{
     public Map<Long, Entity> readAll() {
         Map<Long,Map<String,String>> result = database.executeDQL(READ);
         Map<Long,Entity> canzoni = new HashMap<>();
+      //  EntitiesFactory ef = EntitiesFactory.getInstance();
         Entity e = null;
         for (Entry<Long,Map<String,String>> coppia : result.entrySet()) {
             //il daoSong ha bisogno di un oggetto di tipo Song
@@ -71,7 +68,7 @@ public class DaoSong implements IDao{
             //di valori specifici alle sue proprietà, presi dalla mappa
             //DELEGA la FACTORY che ha il compito di centralizzare e smistare
             //la creazione degli oggetti(dei modelli figli di Entity)
-            e = EntitiesFactory.makeEntity("song", coppia.getValue());
+            e = EntitiesFactory.getInstance().make(Song.class, coppia.getValue());
             canzoni.put(coppia.getKey(), e);
         }
         return canzoni;
@@ -83,19 +80,17 @@ public class DaoSong implements IDao{
         if(id != null && id != 0){
             Map<Long,Map<String,String>> result = database.executeDQL(READONE, String.valueOf(id));
             if(result.entrySet().size() == 1){
-                e = EntitiesFactory.makeEntity("song", result.get(id));
+                e = EntitiesFactory.getInstance().make(Song.class, result.get(id));
             }
         }
         return e;
     }
 
     @Override
-    public void update(Entity e) {
+    public void update(Song s) {
         //"UPDATE song SET name = ?, duration = ? WHERE id = ?";
-        if(e instanceof Song s){
             database.executeUpdate(UPDATE, s.getName(), String.valueOf(s.getDuration()),
             String.valueOf(s.getId()));
-        }
     }
 
     //metodo che aggiorna il valore di album_id in song
@@ -116,7 +111,7 @@ public class DaoSong implements IDao{
             Map<Long,Map<String,String>> canzone = database.executeDQL(READBYNAME, name);
             if (canzone.entrySet().size() == 1) {
                 for (Entry<Long,Map<String,String>> coppia : canzone.entrySet()) {
-                    e = EntitiesFactory.makeEntity("song", coppia.getValue());
+                    e = EntitiesFactory.getInstance().make(Song.class, coppia.getValue());
                 }
             }
         }
@@ -134,7 +129,7 @@ public class DaoSong implements IDao{
                         "FROM song s JOIN album a ON s.album_id = a.id WHERE a.id = ?";
         Map<Long,Map<String,String>> canzoni = database.executeDQL(query,String.valueOf(idAlbum));
         for (Entry<Long,Map<String,String>>coppia : canzoni.entrySet()) {
-            s = EntitiesFactory.makeEntity("song", coppia.getValue());
+            s = EntitiesFactory.getInstance().make(Song.class, coppia.getValue());
             listaCanzoni.put(coppia.getKey(), s);
         }
         return listaCanzoni;

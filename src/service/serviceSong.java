@@ -7,6 +7,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 
+import dao.DaoFactory;
 import dao.DaoSong;
 import models.Entity;
 import models.Song;
@@ -27,11 +28,11 @@ public class ServiceSong {
     //costruttore
     private ServiceSong(){
         //per accedere ai metodi di daoSong devo creare quell'istanza
-        daoSong = DaoSong.getInstance();
+        daoSong = DaoFactory.getInstance().make(DaoSong.class);
     }
 
     //metodi
-    public void save(Entity e){
+    public void save(Song e){
         daoSong.addEntity(e);
     }
 
@@ -55,7 +56,7 @@ public class ServiceSong {
         return (Song)daoSong.readById(id);
     }
 
-    public void update(Entity e){
+    public void update(Song e){
         daoSong.update(e);
     }
 

@@ -9,7 +9,7 @@ import models.Album;
 import models.EntitiesFactory;
 import models.Entity;
 
-public class DaoAlbum implements IDao{
+public class DaoAlbum implements IDao<Album>{
 
     //proprietà
     private Database database;
@@ -34,12 +34,12 @@ public class DaoAlbum implements IDao{
 
     //costruttore
     private DaoAlbum(){
-        database = Database.getDatabase();
+        database = Database.getInstance();
     }
 
     //metodi
     @Override
-    public Long addEntity(Entity e) {
+    public Long addEntity(Album e) {
         if(e !=null && e instanceof Album){
            return database.executeUpdate(INSERT, 
            ((Album)e).getName(),String.valueOf(((Album)e).getDate_release())); 
@@ -54,7 +54,7 @@ public class DaoAlbum implements IDao{
         Map<Long, Entity> dischi = new HashMap<>();
         Entity e = null;
         for (Entry<Long,Map<String,String>> coppia : result.entrySet()) {
-            e = EntitiesFactory.makeEntity("album", coppia.getValue());
+            e = EntitiesFactory.getInstance().make(Album.class, coppia.getValue());
             dischi.put(e.getId(), e);
         }
         return dischi;
@@ -66,14 +66,14 @@ public class DaoAlbum implements IDao{
         if(id != null && id != 0){
             Map<Long,Map<String,String>> result= database.executeDQL(READBYID, String.valueOf(id));
             if(result.entrySet().size() == 1){
-                e = EntitiesFactory.makeEntity("album", result.get(id));
+                e = EntitiesFactory.getInstance().make(Album.class, result.get(id));
             }
         }
         return e;
     }
 
     @Override
-    public void update(Entity e) {
+    public void update(Album e) {
         //"UPDATE album SET name = ?, date_release = ? WHERE id = ?";
         if(e != null && e instanceof Album a){
             database.executeUpdate(UPDATE,a.getName(), String.valueOf(a.getDate_release()),
@@ -95,7 +95,7 @@ public class DaoAlbum implements IDao{
            Map<Long,Map<String,String>> album = database.executeDQL(READBYNAME, titolo);
             if(album.entrySet().size() == 1){
                 for ( Entry<Long,Map<String,String>> coppia : album.entrySet()) {
-                    e = EntitiesFactory.makeEntity("album", coppia.getValue());
+                    e = EntitiesFactory.getInstance().make(Album.class, coppia.getValue());
                 }
             }
         }
@@ -108,7 +108,7 @@ public class DaoAlbum implements IDao{
         Map<Long,Map<String,String>> result = database.executeDQL(READBYSONGNAME, name);
         if(result.entrySet().size() == 1){
             for (Entry<Long,Map<String,String>> coppia : result.entrySet()) {
-                e = EntitiesFactory.makeEntity("album", coppia.getValue());
+                e = EntitiesFactory.getInstance().make(Album.class, coppia.getValue());
                 album.put(e.getId(), e);
             }
         }

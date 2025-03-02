@@ -40,13 +40,11 @@ public class Database {
 
     /*Quello di riportato è il patter CREAZIONALE SINGLETON:
      *1.Problema:
-    vogliamo evitare di creare più volte lo stesso oggetto, per ragioni di prestazioni, di sicurezza, o entrambe. Esempi classici: registro (che non dovrebbe essere duplicato), 
-    DAO (ne serve tipicamente solo uno per tipo).
+    vogliamo evitare di creare più volte lo stesso oggetto, per ragioni di prestazioni, di sicurezza, o entrambe. Esempi classici: registro (che non dovrebbe essere duplicato), DAO (ne serve tipicamente solo uno per tipo).
 
     2.Soluzione:
     viene usato per garantire al massimo una istanza di un oggetto. 
-    Definito un oggetto di cui non vogliamo ripetizioni modifichiamo la classe relavita dell'oggetto e il suo costruttore in modo da evitare repliche e crearne al massimo uno.
-    Questo passaggio richiede un approccio standard che è il Singleton
+    Definito un oggetto di cui non vogliamo ripetizioni modifichiamo la classe relavita dell'oggetto e il suo costruttore in modo da evitare repliche e crearne al massimo uno. Questo passaggio richiede un approccio standard che è il Singleton
 
     3.Soggetti:
     - il Client: chi ha bisogno dell'oggetto e che quindi usarà il Singleton
@@ -63,7 +61,7 @@ public class Database {
     
     // ci deve essere un metodo statico GET public che ritorni il valore di quell'oggetto e che al suo interno abbia un controllo sul valore dell’istanza instance.
     // Alla prima chiamata del metodo instance verrà creato e restituito. Dalla seconda in avanti, verrà sempre restituita l’istanza creata in precedenza
-    public synchronized static Database getDatabase() {
+    public synchronized static Database getInstance() {
         // La parola chiave synchronized nel metodo getInstance() assicura che un chiamante per volta entri nel metodo, di modo che non possano esserci due chiamate 
         // contemporanee che porterebbero alla creazione di due oggetti instance separati, di fatto rompendo il meccanismo.
         if(instance == null){

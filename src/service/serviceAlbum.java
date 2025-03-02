@@ -6,6 +6,7 @@ import java.util.Map;
 import java.util.Map.Entry;
 
 import dao.DaoAlbum;
+import dao.DaoFactory;
 import models.Album;
 import models.Entity;
 
@@ -25,12 +26,12 @@ public class ServiceAlbum {
 
     //costruttore
     private ServiceAlbum(){
-        daoAlbum = DaoAlbum.getInstance();
+        daoAlbum = DaoFactory.getInstance().make(DaoAlbum.class);
         serviceSong = ServiceSong.getInstance();
     }
 
     //metodi
-    public Long save(Entity e){
+    public Long save(Album e){
         return daoAlbum.addEntity(e);
     }
     
@@ -79,4 +80,7 @@ public class ServiceAlbum {
         return null;
     }
 
+    public void update(Album a){
+        daoAlbum.update(a);
+    }
 }
